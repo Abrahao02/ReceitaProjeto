@@ -62,7 +62,7 @@ class Receita {
 public static void salvarReceitasCSV(ArrayList<Receita> receitas) {
     try {
         FileWriter writer = new FileWriter("receitas.csv");
-        writer.write("Nome da Receita,Ingredientes,Total\n");
+        writer.write("Nome da Receita,Valor,Ingredientes\n");
 
         for (Receita receita : receitas) {
             StringBuilder ingredientes = new StringBuilder();
@@ -77,7 +77,7 @@ public static void salvarReceitasCSV(ArrayList<Receita> receitas) {
             }
 
             double total = receita.calcularCustoTotal();
-            writer.write(receita.nome + "," + ingredientes.toString() + "," + total + "\n");
+            writer.write(receita.nome + "," + "R$: " + total + "," + "Ingredientes: " + ingredientes.toString() + "\n");
         }
 
         writer.close();
