@@ -3,6 +3,8 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
 
 class Ingrediente {
     String nome;
@@ -57,8 +59,34 @@ class Receita {
             System.out.println("- " + ingrediente.nome + " (" + ingrediente.quantidadeUtilizada + ") - R$" + ingrediente.calcularCusto());
         }
     }
+public static void salvarReceitasCSV(ArrayList<Receita> receitas) {
+    try {
+        FileWriter writer = new FileWriter("receitas.csv");
+        writer.write("Nome da Receita,Ingredientes,Total\n");
+
+        for (Receita receita : receitas) {
+            StringBuilder ingredientes = new StringBuilder();
+            for (Ingrediente ingrediente : receita.ingredientes) {
+                ingredientes.append(ingrediente.nome)
+                           .append(" (")
+                           .append(ingrediente.quantidadeUtilizada)
+                           .append("), ");
+            }
+            if (ingredientes.length() > 0) {
+                ingredientes.delete(ingredientes.length() - 2, ingredientes.length()); // Remover a vírgula final
+            }
+
+            double total = receita.calcularCustoTotal();
+            writer.write(receita.nome + "," + ingredientes.toString() + "," + total + "\n");
+        }
+
+        writer.close();
+        System.out.println("Receitas salvas com sucesso em 'receitas.csv'!");
+    } catch (IOException e) {
+        System.err.println("Erro ao salvar as receitas em 'receitas.csv': " + e.getMessage());
+    }
 }
-public class Main {
+public static class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -74,7 +102,8 @@ public class Main {
             System.out.println("1. Adicionar Receita");
             System.out.println("2. Ver Receitas");
             System.out.println("3. Editar Receita");
-            System.out.println("4. Sair");
+            System.out.println("4. Salvar Receitas em CSV");
+            System.out.println("5. Sair");
             System.out.print("Escolha uma opção: ");
             int escolha = scanner.nextInt();
             scanner.nextLine(); // Limpar o buffer
@@ -199,6 +228,8 @@ System.out.println("Ingrediente editado com sucesso!");
                     System.out.println("Escolha inválida.");
                 }
             } else if (escolha == 4) {
+                salvarReceitasCSV(receitas);
+            } else if (escolha == 5) {
                 System.out.println("Saindo do programa.");
                 break;
             } else {
@@ -208,4 +239,5 @@ System.out.println("Ingrediente editado com sucesso!");
 
         scanner.close();
     }
+}
 }
