@@ -93,56 +93,63 @@ class Receita {
 }
 
 public class Main {
-    // Declaração da variável df fora do método main
-    private static DecimalFormat df;
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<Receita> receitas = new ArrayList<>();
         Autenticacao autenticacao = new Autenticacao();
-
-        autenticacao.cadastrarUsuario("usuario", "senha");
+        String nomeDoUsuarioAutenticado = null; // Inicialize com null
 
         // Definir o Locale para usar ponto como separador decimal
         DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.getDefault());
         dfs.setDecimalSeparator('.');
-        df = new DecimalFormat("#.##", dfs); // Inicialize a variável df aqui
+        DecimalFormat df = new DecimalFormat("#.##", dfs);
 
         while (true) {
-            System.out.println("Menu:");
-            System.out.println("1. Cadastro");
-            System.out.println("2. Login");
-            System.out.println("3. Sair");
-            System.out.print("Escolha uma opção: ");
-            int escolha = scanner.nextInt();
-            scanner.nextLine(); // Limpar o buffer
+            if (nomeDoUsuarioAutenticado == null) {
+                System.out.println("Menu de Login e Cadastro:");
+                System.out.println("1. Cadastro");
+                System.out.println("2. Login");
+                System.out.println("3. Sair");
+                System.out.print("Escolha uma opção: ");
+                int escolha = scanner.nextInt();
+                scanner.nextLine(); // Limpar o buffer
 
-            if (escolha == 1) {
-                System.out.print("Digite o nome de usuário: ");
-                String nomeDeUsuario = scanner.nextLine();
-                System.out.print("Digite a senha: ");
-                String senha = scanner.nextLine();
-                autenticacao.cadastrarUsuario(nomeDeUsuario, senha);
-            } else if (escolha == 2) {
-                System.out.print("Digite o nome de usuário: ");
-                String nomeDeUsuario = scanner.nextLine();
-                System.out.print("Digite a senha: ");
-                String senha = scanner.nextLine();
-                if (autenticacao.autenticar(nomeDeUsuario, senha)) {
-                    // Usuário autenticado com sucesso, exiba o menu principal
-                    while (true) {
-                        System.out.println("Menu Principal:");
-                        System.out.println("1. Adicionar Receita");
-                        System.out.println("2. Ver Receitas");
-                        System.out.println("3. Editar Receita");
-                        System.out.println("4. Salvar Receitas em CSV");
-                        System.out.println("5. Sair");
-                        System.out.print("Escolha uma opção: ");
-                        int escolhaMenu = scanner.nextInt();
-                        scanner.nextLine(); // Limpar o buffer
+                if (escolha == 1) {
+                    System.out.print("Digite o nome de usuário: ");
+                    String nomeDeUsuario = scanner.nextLine();
+                    System.out.print("Digite a senha: ");
+                    String senha = scanner.nextLine();
+                    autenticacao.cadastrarUsuario(nomeDeUsuario, senha);
+                } else if (escolha == 2) {
+                    System.out.print("Digite o nome de usuário: ");
+                    String nomeDeUsuario = scanner.nextLine();
+                    System.out.print("Digite a senha: ");
+                    String senha = scanner.nextLine();
+                    if (autenticacao.autenticar(nomeDeUsuario, senha)) {
+                        nomeDoUsuarioAutenticado = nomeDeUsuario;
+                        System.out.println("Login bem-sucedido!");
+                    } else {
+                        System.out.println("Autenticação falhou. Verifique o nome de usuário e senha.");
+                    }
+                } else if (escolha == 3) {
+                    System.out.println("Saindo do programa.");
+                    break;
+                } else {
+                    System.out.println("Escolha inválida. Tente novamente.");
+                }
+            } else {
+                System.out.println("Menu Principal, bem-vindo: " + nomeDoUsuarioAutenticado);
+                System.out.println("1. Adicionar Receita");
+                System.out.println("2. Ver Receitas");
+                System.out.println("3. Editar Receita");
+                System.out.println("4. Salvar Receitas em CSV");
+                System.out.println("5. Sair");
+                System.out.print("Escolha uma opção: ");
+                int escolhaMenu = scanner.nextInt();
+                scanner.nextLine(); // Limpar o buffer
 
-                        if (escolhaMenu == 1) {
-                            // Código para adicionar receita
+                if (escolhaMenu == 1) {
+                    // Código para adicionar receita
                             System.out.print("Digite o nome da receita: ");
                             String nomeReceita = scanner.nextLine();
                             Receita receita = new Receita(nomeReceita);
@@ -168,8 +175,8 @@ public class Main {
 
                             receitas.add(receita);
                             System.out.println("Receita adicionada com sucesso!");
-                        } else if (escolhaMenu == 2) {
-                            // Código para ver receitas
+                } else if (escolhaMenu == 2) {
+                    // Código para ver receitas
                             System.out.println("Receitas:");
                             for (int i = 0; i < receitas.size(); i++) {
                                 Receita receita = receitas.get(i);
@@ -191,8 +198,8 @@ public class Main {
                             } else {
                                 System.out.println("Escolha inválida.");
                             }
-                        } else if (escolhaMenu == 3) {
-                            // Código para editar receita
+                } else if (escolhaMenu == 3) {
+                    // Código para editar receita
                             System.out.println("Editar Receita:");
                             System.out.println("Receitas:");
                             for (int i = 0; i < receitas.size(); i++) {
@@ -260,31 +267,22 @@ public class Main {
                             } else {
                                 System.out.println("Escolha inválida.");
                             }
-                        } else if (escolhaMenu == 4) {
-                            // Código para salvar receitas em CSV
-                            salvarReceitasCSV(receitas);
-                        } else if (escolhaMenu == 5) {
-                            System.out.println("Saindo do programa.");
-                            break;
-                        } else {
-                            System.out.println("Escolha inválida. Tente novamente.");
-                        }
-                    }
+                } else if (escolhaMenu == 4) {
+                    // Código para salvar receitas em CSV
+                            salvarReceitasCSV(receitas, df);
+                } else if (escolhaMenu == 5) {
+                    System.out.println("Saindo do programa.");
+                    break;
                 } else {
-                    System.out.println("Autenticação falhou. Verifique o nome de usuário e senha.");
+                    System.out.println("Escolha inválida. Tente novamente.");
                 }
-            } else if (escolha == 3) {
-                System.out.println("Saindo do programa.");
-                break;
-            } else {
-                System.out.println("Escolha inválida. Tente novamente.");
             }
         }
 
         scanner.close();
     }
 
-    public static void salvarReceitasCSV(ArrayList<Receita> receitas) {
+    public static void salvarReceitasCSV(ArrayList<Receita> receitas, DecimalFormat df) {
         try {
             FileWriter writer = new FileWriter("receitas.csv");
             writer.write("Nome da Receita,Valor,Ingredientes\n");
