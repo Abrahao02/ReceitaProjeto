@@ -92,6 +92,7 @@ class Receita {
     }
 }
 
+
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -104,12 +105,14 @@ public class Main {
         dfs.setDecimalSeparator('.');
         DecimalFormat df = new DecimalFormat("#.##", dfs);
 
-        while (true) {
+        boolean sairPrograma = false; // Adicione uma variável para controlar a saída do programa
+
+        while (!sairPrograma) { // Use um loop para controlar a navegação entre as telas
             if (nomeDoUsuarioAutenticado == null) {
                 System.out.println("Menu de Login e Cadastro:");
                 System.out.println("1. Cadastro");
                 System.out.println("2. Login");
-                System.out.println("3. Sair");
+                System.out.println("3. Sair do programa");
                 System.out.print("Escolha uma opção: ");
                 int escolha = scanner.nextInt();
                 scanner.nextLine(); // Limpar o buffer
@@ -133,7 +136,7 @@ public class Main {
                     }
                 } else if (escolha == 3) {
                     System.out.println("Saindo do programa.");
-                    break;
+                    sairPrograma = true; // Defina a variável para sair do loop principal
                 } else {
                     System.out.println("Escolha inválida. Tente novamente.");
                 }
@@ -143,136 +146,136 @@ public class Main {
                 System.out.println("2. Ver Receitas");
                 System.out.println("3. Editar Receita");
                 System.out.println("4. Salvar Receitas em CSV");
-                System.out.println("5. Sair");
+                System.out.println("5. Logout");
                 System.out.print("Escolha uma opção: ");
                 int escolhaMenu = scanner.nextInt();
                 scanner.nextLine(); // Limpar o buffer
 
                 if (escolhaMenu == 1) {
                     // Código para adicionar receita
-                            System.out.print("Digite o nome da receita: ");
-                            String nomeReceita = scanner.nextLine();
-                            Receita receita = new Receita(nomeReceita);
+                    System.out.print("Digite o nome da receita: ");
+                    String nomeReceita = scanner.nextLine();
+                    Receita receita = new Receita(nomeReceita);
 
-                            while (true) {
-                                System.out.print("Digite o nome do ingrediente (ou 'sair' para concluir): ");
-                                String nomeIngrediente = scanner.nextLine();
-                                if (nomeIngrediente.equalsIgnoreCase("sair")) {
-                                    break;
-                                }
-                                System.out.print("Digite o preço do ingrediente: ");
-                                double precoIngrediente = scanner.nextDouble();
-                                scanner.nextLine(); // Limpar o buffer
-                                System.out.print("Digite a quantidade do ingrediente (em gramas ou ml): ");
-                                double quantidadeIngrediente = scanner.nextDouble();
-                                scanner.nextLine(); // Limpar o buffer
-                                System.out.print("Digite a quantidade utilizada (em gramas ou ml): ");
-                                double quantidadeUtilizada = scanner.nextDouble();
-                                scanner.nextLine(); // Limpar o buffer
+                    while (true) {
+                        System.out.print("Digite o nome do ingrediente (ou 'sair' para concluir): ");
+                        String nomeIngrediente = scanner.nextLine();
+                        if (nomeIngrediente.equalsIgnoreCase("sair")) {
+                            break;
+                        }
+                        System.out.print("Digite o preço do ingrediente: ");
+                        double precoIngrediente = scanner.nextDouble();
+                        scanner.nextLine(); // Limpar o buffer
+                        System.out.print("Digite a quantidade do ingrediente (em gramas ou ml): ");
+                        double quantidadeIngrediente = scanner.nextDouble();
+                        scanner.nextLine(); // Limpar o buffer
+                        System.out.print("Digite a quantidade utilizada (em gramas ou ml): ");
+                        double quantidadeUtilizada = scanner.nextDouble();
+                        scanner.nextLine(); // Limpar o buffer
 
-                                receita.adicionarIngrediente(nomeIngrediente, precoIngrediente, quantidadeIngrediente, quantidadeUtilizada);
-                            }
+                        receita.adicionarIngrediente(nomeIngrediente, precoIngrediente, quantidadeIngrediente, quantidadeUtilizada);
+                    }
 
-                            receitas.add(receita);
-                            System.out.println("Receita adicionada com sucesso!");
+                    receitas.add(receita);
+                    System.out.println("Receita adicionada com sucesso!");
                 } else if (escolhaMenu == 2) {
                     // Código para ver receitas
-                            System.out.println("Receitas:");
-                            for (int i = 0; i < receitas.size(); i++) {
-                                Receita receita = receitas.get(i);
-                                System.out.println((i + 1) + ". " + receita.nome);
-                            }
+                    System.out.println("Receitas:");
+                    for (int i = 0; i < receitas.size(); i++) {
+                        Receita receita = receitas.get(i);
+                        System.out.println((i + 1) + ". " + receita.nome);
+                    }
 
-                            System.out.print("Escolha uma receita para ver os ingredientes (ou 'sair' para voltar): ");
-                            String escolhaReceita = scanner.nextLine();
-                            if (escolhaReceita.equalsIgnoreCase("sair")) {
-                                continue;
-                            }
+                    System.out.print("Escolha uma receita para ver os ingredientes (ou 'sair' para voltar): ");
+                    String escolhaReceita = scanner.nextLine();
+                    if (escolhaReceita.equalsIgnoreCase("sair")) {
+                        continue;
+                    }
 
-                            int receitaEscolhida = Integer.parseInt(escolhaReceita);
-                            if (receitaEscolhida >= 1 && receitaEscolhida <= receitas.size()) {
-                                Receita receita = receitas.get(receitaEscolhida - 1);
-                                receita.mostrarIngredientes();
+                    int receitaEscolhida = Integer.parseInt(escolhaReceita);
+                    if (receitaEscolhida >= 1 && receitaEscolhida <= receitas.size()) {
+                        Receita receita = receitas.get(receitaEscolhida - 1);
+                        receita.mostrarIngredientes();
 
-                                System.out.println("Total gasto na receita '" + receita.nome + "': R$" + df.format(receita.calcularCustoTotal()));
-                            } else {
-                                System.out.println("Escolha inválida.");
-                            }
+                        System.out.println("Total gasto na receita '" + receita.nome + "': R$" + df.format(receita.calcularCustoTotal()));
+                    } else {
+                        System.out.println("Escolha inválida.");
+                    }
                 } else if (escolhaMenu == 3) {
                     // Código para editar receita
-                            System.out.println("Editar Receita:");
-                            System.out.println("Receitas:");
-                            for (int i = 0; i < receitas.size(); i++) {
-                                Receita receita = receitas.get(i);
-                                System.out.println((i + 1) + ". " + receita.nome);
-                            }
+                    System.out.println("Editar Receita:");
+                    System.out.println("Receitas:");
+                    for (int i = 0; i < receitas.size(); i++) {
+                        Receita receita = receitas.get(i);
+                        System.out.println((i + 1) + ". " + receita.nome);
+                    }
 
-                            System.out.print("Escolha uma receita para editar (ou 'sair' para voltar): ");
-                            String escolhaEdicao = scanner.nextLine();
-                            if (escolhaEdicao.equalsIgnoreCase("sair")) {
-                                continue;
-                            }
+                    System.out.print("Escolha uma receita para editar (ou 'sair' para voltar): ");
+                    String escolhaEdicao = scanner.nextLine();
+                    if (escolhaEdicao.equalsIgnoreCase("sair")) {
+                        continue;
+                    }
 
-                            int receitaEditar = Integer.parseInt(escolhaEdicao);
-                            if (receitaEditar >= 1 && receitaEditar <= receitas.size()) {
-                                Receita receita = receitas.get(receitaEditar - 1);
-                                receita.mostrarIngredientes();
+                    int receitaEditar = Integer.parseInt(escolhaEdicao);
+                    if (receitaEditar >= 1 && receitaEditar <= receitas.size()) {
+                        Receita receita = receitas.get(receitaEditar - 1);
+                        receita.mostrarIngredientes();
 
-                                System.out.println("Escolha o ingrediente para editar:");
-                                for (int i = 0; i < receita.ingredientes.size(); i++) {
-                                    Ingrediente ingrediente = receita.ingredientes.get(i);
-                                    System.out.println((i + 1) + ". " + ingrediente.nome);
-                                }
-                                System.out.println((receita.ingredientes.size() + 1) + ". Adicionar novo ingrediente");
-                                System.out.print("Digite o número do ingrediente para editar ou adicionar um novo: ");
-                                int escolhaIngrediente = scanner.nextInt();
-                                scanner.nextLine(); // Limpar o buffer
+                        System.out.println("Escolha o ingrediente para editar:");
+                        for (int i = 0; i < receita.ingredientes.size(); i++) {
+                            Ingrediente ingrediente = receita.ingredientes.get(i);
+                            System.out.println((i + 1) + ". " + ingrediente.nome);
+                        }
+                        System.out.println((receita.ingredientes.size() + 1) + ". Adicionar novo ingrediente");
+                        System.out.print("Digite o número do ingrediente para editar ou adicionar um novo: ");
+                        int escolhaIngrediente = scanner.nextInt();
+                        scanner.nextLine(); // Limpar o buffer
 
-                                if (escolhaIngrediente >= 1 && escolhaIngrediente <= receita.ingredientes.size()) {
-                                    int indiceIngrediente = escolhaIngrediente - 1;
-                                    Ingrediente ingrediente = receita.ingredientes.get(indiceIngrediente);
+                        if (escolhaIngrediente >= 1 && escolhaIngrediente <= receita.ingredientes.size()) {
+                            int indiceIngrediente = escolhaIngrediente - 1;
+                            Ingrediente ingrediente = receita.ingredientes.get(indiceIngrediente);
 
-                                    System.out.print("Digite o novo nome do ingrediente: ");
-                                    String novoNome = scanner.nextLine();
-                                    System.out.print("Digite o novo preço do ingrediente: ");
-                                    double novoPreco = scanner.nextDouble();
-                                    scanner.nextLine(); // Limpar o buffer
-                                    System.out.print("Digite a nova quantidade do ingrediente (em gramas ou ml): ");
-                                    double novaQuantidade = scanner.nextDouble();
-                                    scanner.nextLine(); // Limpar o buffer
-                                    System.out.print("Digite a nova quantidade utilizada do ingrediente (em gramas ou ml): ");
-                                    double novaQuantidadeUtilizada = scanner.nextDouble();
-                                    scanner.nextLine(); // Limpar o buffer
+                            System.out.print("Digite o novo nome do ingrediente: ");
+                            String novoNome = scanner.nextLine();
+                            System.out.print("Digite o novo preço do ingrediente: ");
+                            double novoPreco = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
+                            System.out.print("Digite a nova quantidade do ingrediente (em gramas ou ml): ");
+                            double novaQuantidade = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
+                            System.out.print("Digite a nova quantidade utilizada do ingrediente (em gramas ou ml): ");
+                            double novaQuantidadeUtilizada = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
 
-                                    receita.editarIngrediente(indiceIngrediente, novoNome, novoPreco, novaQuantidade, novaQuantidadeUtilizada);
-                                    System.out.println("Ingrediente editado com sucesso!");
-                                } else if (escolhaIngrediente == receita.ingredientes.size() + 1) {
-                                    System.out.print("Digite o nome do novo ingrediente: ");
-                                    String novoNome = scanner.nextLine();
-                                    System.out.print("Digite o preço do novo ingrediente: ");
-                                    double novoPreco = scanner.nextDouble();
-                                    scanner.nextLine(); // Limpar o buffer
-                                    System.out.print("Digite a quantidade do novo ingrediente (em gramas ou ml): ");
-                                    double novaQuantidade = scanner.nextDouble();
-                                    scanner.nextLine(); // Limpar o buffer
-                                    System.out.print("Digite a quantidade utilizada do novo ingrediente (em gramas ou ml): ");
-                                    double novaQuantidadeUtilizada = scanner.nextDouble();
-                                    scanner.nextLine(); // Limpar o buffer
+                            receita.editarIngrediente(indiceIngrediente, novoNome, novoPreco, novaQuantidade, novaQuantidadeUtilizada);
+                            System.out.println("Ingrediente editado com sucesso!");
+                        } else if (escolhaIngrediente == receita.ingredientes.size() + 1) {
+                            System.out.print("Digite o nome do novo ingrediente: ");
+                            String novoNome = scanner.nextLine();
+                            System.out.print("Digite o preço do novo ingrediente: ");
+                            double novoPreco = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
+                            System.out.print("Digite a quantidade do novo ingrediente (em gramas ou ml): ");
+                            double novaQuantidade = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
+                            System.out.print("Digite a quantidade utilizada do novo ingrediente (em gramas ou ml): ");
+                            double novaQuantidadeUtilizada = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
 
-                                    receita.adicionarIngrediente(novoNome, novoPreco, novaQuantidade, novaQuantidadeUtilizada);
-                                    System.out.println("Novo ingrediente adicionado com sucesso!");
-                                } else {
-                                    System.out.println("Escolha de ingrediente inválida.");
-                                }
-                            } else {
-                                System.out.println("Escolha inválida.");
-                            }
+                            receita.adicionarIngrediente(novoNome, novoPreco, novaQuantidade, novaQuantidadeUtilizada);
+                            System.out.println("Novo ingrediente adicionado com sucesso!");
+                        } else {
+                            System.out.println("Escolha de ingrediente inválida.");
+                        }
+                    } else {
+                        System.out.println("Escolha inválida.");
+                    }
                 } else if (escolhaMenu == 4) {
                     // Código para salvar receitas em CSV
-                            salvarReceitasCSV(receitas, df);
+                    salvarReceitasCSV(receitas, df);
                 } else if (escolhaMenu == 5) {
-                    System.out.println("Saindo do programa.");
-                    break;
+                    System.out.println("Saindo do menu principal.");
+                    nomeDoUsuarioAutenticado = null; // Desautenticar o usuário ao sair do menu principal
                 } else {
                     System.out.println("Escolha inválida. Tente novamente.");
                 }
