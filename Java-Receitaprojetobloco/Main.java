@@ -1,7 +1,9 @@
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -50,8 +52,8 @@ class Ingrediente {
     }
 
     public double calcularCusto() {
-        double custoUnitario = preco / quantidade; // Calcula o custo por unidade do ingrediente
-        return custoUnitario * quantidadeUtilizada; // Calcula o custo total do ingrediente utilizado
+        double custoUnitario = preco / quantidade;
+        return custoUnitario * quantidadeUtilizada;
     }
 }
 
@@ -68,12 +70,9 @@ class Receita {
         ingredientes.add(ingrediente);
     }
 
-    public void editarIngrediente(int indice, String nome, double preco, double quantidade, double quantidadeUtilizada) {
-        Ingrediente ingrediente = ingredientes.get(indice);
-        ingrediente.nome = nome;
-        ingrediente.preco = preco;
-        ingrediente.quantidade = quantidade;
-        ingrediente.quantidadeUtilizada = quantidadeUtilizada;
+    public void editarIngrediente(int indice, String novoNome, double novoPreco, double novaQuantidade, double novaQuantidadeUtilizada) {
+        Ingrediente ingrediente = new Ingrediente(novoNome, novoPreco, novaQuantidade, novaQuantidadeUtilizada);
+        ingredientes.set(indice, ingrediente);
     }
 
     public double calcularCustoTotal() {
@@ -92,22 +91,22 @@ class Receita {
     }
 }
 
-
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<Receita> receitas = new ArrayList<>();
+        Map<String, Ingrediente> ingredientesCadastrados = new HashMap<>();
         Autenticacao autenticacao = new Autenticacao();
-        String nomeDoUsuarioAutenticado = null; // Inicialize com null
+        String nomeDoUsuarioAutenticado = null;
 
         // Definir o Locale para usar ponto como separador decimal
         DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.getDefault());
         dfs.setDecimalSeparator('.');
         DecimalFormat df = new DecimalFormat("#.##", dfs);
 
-        boolean sairPrograma = false; // Adicione uma variável para controlar a saída do programa
+        boolean sairPrograma = false;
 
-        while (!sairPrograma) { // Use um loop para controlar a navegação entre as telas
+        while (!sairPrograma) {
             if (nomeDoUsuarioAutenticado == null) {
                 System.out.println("Menu de Login e Cadastro:");
                 System.out.println("1. Cadastro");
@@ -141,12 +140,15 @@ public class Main {
                     System.out.println("Escolha inválida. Tente novamente.");
                 }
             } else {
-                System.out.println("Menu Principal, bem-vindo: " + nomeDoUsuarioAutenticado);
+                System.out.println("Menu Principal, Bem-vindo: " + nomeDoUsuarioAutenticado);
                 System.out.println("1. Adicionar Receita");
                 System.out.println("2. Ver Receitas");
                 System.out.println("3. Editar Receita");
                 System.out.println("4. Salvar Receitas em CSV");
-                System.out.println("5. Logout");
+                System.out.println("5. Cadastrar Ingrediente");
+                System.out.println("6. Listar Ingredientes Cadastrados");
+                System.out.println("7. Editar Ingrediente");
+                System.out.println("8. Logout");
                 System.out.print("Escolha uma opção: ");
                 int escolhaMenu = scanner.nextInt();
                 scanner.nextLine(); // Limpar o buffer
@@ -163,17 +165,36 @@ public class Main {
                         if (nomeIngrediente.equalsIgnoreCase("sair")) {
                             break;
                         }
-                        System.out.print("Digite o preço do ingrediente: ");
-                        double precoIngrediente = scanner.nextDouble();
-                        scanner.nextLine(); // Limpar o buffer
-                        System.out.print("Digite a quantidade do ingrediente (em gramas ou ml): ");
-                        double quantidadeIngrediente = scanner.nextDouble();
-                        scanner.nextLine(); // Limpar o buffer
-                        System.out.print("Digite a quantidade utilizada (em gramas ou ml): ");
-                        double quantidadeUtilizada = scanner.nextDouble();
-                        scanner.nextLine(); // Limpar o buffer
 
-                        receita.adicionarIngrediente(nomeIngrediente, precoIngrediente, quantidadeIngrediente, quantidadeUtilizada);
+                        Ingrediente ingredienteExistente = ingredientesCadastrados.get(nomeIngrediente);
+                        if (ingredienteExistente != null) {
+                            System.out.println("Ingrediente encontrado:");
+                            System.out.println("Nome: " + ingredienteExistente.nome);
+                            System.out.println("Preço: " + ingredienteExistente.preco);
+                            System.out.println("Quantidade: " + ingredienteExistente.quantidade);
+                            System.out.print("Digite a quantidade utilizada do ingrediente (em gramas ou ml): ");
+                            double quantidadeUtilizada = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
+
+                            receita.adicionarIngrediente(ingredienteExistente.nome, ingredienteExistente.preco, ingredienteExistente.quantidade, quantidadeUtilizada);
+                            System.out.println("Ingrediente adicionado com sucesso!");
+                        } else {
+                            // Se o ingrediente não estiver cadastrado, solicite o preço e a quantidade
+                            System.out.print("Digite o preço do ingrediente: ");
+                            double precoIngrediente = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
+                            System.out.print("Digite a quantidade do ingrediente (em gramas ou ml): ");
+                            double quantidadeIngrediente = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
+                            System.out.print("Digite a quantidade utilizada do ingrediente (em gramas ou ml): ");
+                            double quantidadeUtilizada = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
+
+                            Ingrediente novoIngrediente = new Ingrediente(nomeIngrediente, precoIngrediente, quantidadeIngrediente, quantidadeUtilizada);
+                            ingredientesCadastrados.put(nomeIngrediente, novoIngrediente);
+                            receita.adicionarIngrediente(nomeIngrediente, precoIngrediente, quantidadeIngrediente, quantidadeUtilizada);
+                            System.out.println("Novo ingrediente adicionado com sucesso!");
+                        }
                     }
 
                     receitas.add(receita);
@@ -274,8 +295,45 @@ public class Main {
                     // Código para salvar receitas em CSV
                     salvarReceitasCSV(receitas, df);
                 } else if (escolhaMenu == 5) {
-                    System.out.println("Saindo do menu principal.");
-                    nomeDoUsuarioAutenticado = null; // Desautenticar o usuário ao sair do menu principal
+                    // Código para cadastrar ingrediente
+                    System.out.print("Digite o nome do ingrediente: ");
+                    String nomeIngrediente = scanner.nextLine();
+                    if (ingredientesCadastrados.containsKey(nomeIngrediente)) {
+                        System.out.println("Ingrediente já cadastrado. Usando informações cadastradas.");
+                        Ingrediente ingredienteCadastrado = ingredientesCadastrados.get(nomeIngrediente);
+                        System.out.println("Nome: " + ingredienteCadastrado.nome);
+                        System.out.println("Preço: " + ingredienteCadastrado.preco);
+                        System.out.println("Quantidade: " + ingredienteCadastrado.quantidade);
+                    } else {
+                        System.out.print("Digite o preço do ingrediente: ");
+                        double precoIngrediente = scanner.nextDouble();
+                        scanner.nextLine();
+                        System.out.print("Digite a quantidade do ingrediente (em gramas ou ml): ");
+                        double quantidadeIngrediente = scanner.nextDouble();
+                        scanner.nextLine();
+
+                        Ingrediente novoIngrediente = new Ingrediente(nomeIngrediente, precoIngrediente, quantidadeIngrediente, 0);
+                        ingredientesCadastrados.put(nomeIngrediente, novoIngrediente);
+                        System.out.println("Ingrediente cadastrado com sucesso.");
+                    }
+                    } else if (escolhaMenu == 6) {
+                      // Listar Ingredientes Cadastrados
+                    System.out.println("Ingredientes Cadastrados:");
+                    for (Ingrediente ingrediente : ingredientesCadastrados.values()) {
+                        System.out.println("Nome: " + ingrediente.nome);
+                        System.out.println("Preço: R$" + df.format(ingrediente.preco));
+                        System.out.println("Quantidade: " + df.format(ingrediente.quantidade) + " gramas ou ml");
+                        System.out.println();
+                    }
+                    
+                } else if (escolhaMenu == 7) {
+                    // Editar Ingrediente (nova opção)
+                    editarIngrediente(ingredientesCadastrados, df, scanner);
+                    
+                } else if (escolhaMenu == 8) {
+                    
+                  System.out.println("Saindo do menu principal.");
+                    nomeDoUsuarioAutenticado = null;
                 } else {
                     System.out.println("Escolha inválida. Tente novamente.");
                 }
@@ -284,7 +342,37 @@ public class Main {
 
         scanner.close();
     }
+    public static void editarIngrediente(Map<String, Ingrediente> ingredientesCadastrados, DecimalFormat df, Scanner scanner) {
+    System.out.print("Digite o nome do ingrediente que deseja editar: ");
+    String nomeIngrediente = scanner.nextLine();
 
+    if (ingredientesCadastrados.containsKey(nomeIngrediente)) {
+        Ingrediente ingrediente = ingredientesCadastrados.get(nomeIngrediente);
+        System.out.println("Ingrediente encontrado:");
+        System.out.println("Nome: " + ingrediente.nome);
+        System.out.println("Preço: R$" + df.format(ingrediente.preco));
+        System.out.println("Quantidade: " + df.format(ingrediente.quantidade) + " gramas ou ml");
+
+        System.out.println("Digite os novos valores (deixe em branco para manter os valores atuais):");
+        System.out.print("Novo nome: ");
+        String novoNome = scanner.nextLine();
+        System.out.print("Novo preço: ");
+        String novoPrecoStr = scanner.nextLine();
+        double novoPreco = novoPrecoStr.isEmpty() ? ingrediente.preco : Double.parseDouble(novoPrecoStr);
+        System.out.print("Nova quantidade (em gramas ou ml): ");
+        String novaQuantidadeStr = scanner.nextLine();
+        double novaQuantidade = novaQuantidadeStr.isEmpty() ? ingrediente.quantidade : Double.parseDouble(novaQuantidadeStr);
+
+        // Atualize os valores do ingrediente
+        ingrediente.nome = novoNome.isEmpty() ? ingrediente.nome : novoNome;
+        ingrediente.preco = novoPreco;
+        ingrediente.quantidade = novaQuantidade;
+
+        System.out.println("Ingrediente editado com sucesso.");
+    } else {
+        System.out.println("Ingrediente não encontrado.");
+    }
+}
     public static void salvarReceitasCSV(ArrayList<Receita> receitas, DecimalFormat df) {
         try {
             FileWriter writer = new FileWriter("receitas.csv");
