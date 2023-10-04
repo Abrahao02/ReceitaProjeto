@@ -50,12 +50,18 @@ class Ingrediente {
         this.quantidade = quantidade;
         this.quantidadeUtilizada = quantidadeUtilizada;
     }
+    public void editarIngrediente(String novoNome, double novoPreco, double novaQuantidade) {
+        this.nome = novoNome;
+        this.preco = novoPreco;
+        this.quantidade = novaQuantidade;
+    }
 
     public double calcularCusto() {
         double custoUnitario = preco / quantidade;
         return custoUnitario * quantidadeUtilizada;
     }
 }
+
 
 class Receita {
     String nome;
@@ -144,11 +150,12 @@ public class Main {
                 System.out.println("1. Adicionar Receita");
                 System.out.println("2. Ver Receitas");
                 System.out.println("3. Editar Receita");
-                System.out.println("4. Salvar Receitas em CSV");
-                System.out.println("5. Cadastrar Ingrediente");
-                System.out.println("6. Listar Ingredientes Cadastrados");
-                System.out.println("7. Editar Ingrediente");
-                System.out.println("8. Logout");
+                System.out.println("4. Excluir Receita");
+                System.out.println("5. Salvar Receitas em CSV");
+                System.out.println("6. Cadastrar Ingrediente");
+                System.out.println("7. Listar Ingredientes Cadastrados");
+                System.out.println("8. Editar Ingrediente Cadastrados");
+                System.out.println("9. Logout");
                 System.out.print("Escolha uma opção: ");
                 int escolhaMenu = scanner.nextInt();
                 scanner.nextLine(); // Limpar o buffer
@@ -291,10 +298,34 @@ public class Main {
                     } else {
                         System.out.println("Escolha inválida.");
                     }
-                } else if (escolhaMenu == 4) {
+                  }
+                    
+                  else if (escolhaMenu == 4) { 
+                    // Código para excluir receita
+                    System.out.println("Excluir Receita:");
+                    System.out.println("Receitas:");
+                    for (int i = 0; i < receitas.size(); i++) {
+                        Receita receita = receitas.get(i);
+                        System.out.println((i + 1) + ". " + receita.nome);
+                    }
+
+                    System.out.print("Escolha uma receita para excluir (ou 'sair' para voltar): ");
+                    String escolhaExclusao = scanner.nextLine();
+                    if (escolhaExclusao.equalsIgnoreCase("sair")) {
+                        continue;
+                    }
+
+                    int receitaExcluir = Integer.parseInt(escolhaExclusao);
+                    if (receitaExcluir >= 1 && receitaExcluir <= receitas.size()) {
+                        Receita receitaRemovida = receitas.remove(receitaExcluir - 1);
+                        System.out.println("Receita '" + receitaRemovida.nome + "' excluída com sucesso.");
+                    } else {
+                        System.out.println("Escolha inválida.");
+                    }
+                } else if (escolhaMenu == 5) {
                     // Código para salvar receitas em CSV
                     salvarReceitasCSV(receitas, df);
-                } else if (escolhaMenu == 5) {
+                } else if (escolhaMenu == 6) {
                     // Código para cadastrar ingrediente
                     System.out.print("Digite o nome do ingrediente: ");
                     String nomeIngrediente = scanner.nextLine();
@@ -316,8 +347,8 @@ public class Main {
                         ingredientesCadastrados.put(nomeIngrediente, novoIngrediente);
                         System.out.println("Ingrediente cadastrado com sucesso.");
                     }
-                    } else if (escolhaMenu == 6) {
-                      // Listar Ingredientes Cadastrados
+                } else if (escolhaMenu == 7) {
+                    // Listar Ingredientes Cadastrados
                     System.out.println("Ingredientes Cadastrados:");
                     for (Ingrediente ingrediente : ingredientesCadastrados.values()) {
                         System.out.println("Nome: " + ingrediente.nome);
@@ -325,14 +356,11 @@ public class Main {
                         System.out.println("Quantidade: " + df.format(ingrediente.quantidade) + " gramas ou ml");
                         System.out.println();
                     }
-                    
-                } else if (escolhaMenu == 7) {
-                    // Editar Ingrediente (nova opção)
-                    editarIngrediente(ingredientesCadastrados, df, scanner);
-                    
                 } else if (escolhaMenu == 8) {
-                    
-                  System.out.println("Saindo do menu principal.");
+                    // Editar Ingrediente (nova opção)
+                    editarOuDeletarIngrediente(ingredientesCadastrados, df, scanner);
+                } else if (escolhaMenu == 9) {
+                    System.out.println("Saindo do menu principal.");
                     nomeDoUsuarioAutenticado = null;
                 } else {
                     System.out.println("Escolha inválida. Tente novamente.");
@@ -342,37 +370,47 @@ public class Main {
 
         scanner.close();
     }
-    public static void editarIngrediente(Map<String, Ingrediente> ingredientesCadastrados, DecimalFormat df, Scanner scanner) {
-    System.out.print("Digite o nome do ingrediente que deseja editar: ");
-    String nomeIngrediente = scanner.nextLine();
 
-    if (ingredientesCadastrados.containsKey(nomeIngrediente)) {
-        Ingrediente ingrediente = ingredientesCadastrados.get(nomeIngrediente);
-        System.out.println("Ingrediente encontrado:");
-        System.out.println("Nome: " + ingrediente.nome);
-        System.out.println("Preço: R$" + df.format(ingrediente.preco));
-        System.out.println("Quantidade: " + df.format(ingrediente.quantidade) + " gramas ou ml");
+    public static void editarOuDeletarIngrediente(Map<String, Ingrediente> ingredientesCadastrados, DecimalFormat df, Scanner scanner) {
+        System.out.print("Digite o nome do ingrediente que deseja editar ou deletar: ");
+        String nomeIngrediente = scanner.nextLine();
 
-        System.out.println("Digite os novos valores (deixe em branco para manter os valores atuais):");
-        System.out.print("Novo nome: ");
-        String novoNome = scanner.nextLine();
-        System.out.print("Novo preço: ");
-        String novoPrecoStr = scanner.nextLine();
-        double novoPreco = novoPrecoStr.isEmpty() ? ingrediente.preco : Double.parseDouble(novoPrecoStr);
-        System.out.print("Nova quantidade (em gramas ou ml): ");
-        String novaQuantidadeStr = scanner.nextLine();
-        double novaQuantidade = novaQuantidadeStr.isEmpty() ? ingrediente.quantidade : Double.parseDouble(novaQuantidadeStr);
+        if (ingredientesCadastrados.containsKey(nomeIngrediente)) {
+            Ingrediente ingrediente = ingredientesCadastrados.get(nomeIngrediente);
+            System.out.println("Ingrediente encontrado:");
+            System.out.println("Nome: " + ingrediente.nome);
+            System.out.println("Preço: R$" + df.format(ingrediente.preco));
+            System.out.println("Quantidade: " + df.format(ingrediente.quantidade) + " gramas or ml");
 
-        // Atualize os valores do ingrediente
-        ingrediente.nome = novoNome.isEmpty() ? ingrediente.nome : novoNome;
-        ingrediente.preco = novoPreco;
-        ingrediente.quantidade = novaQuantidade;
+            System.out.println("Digite 'editar' para editar o ingrediente ou 'deletar' para excluí-lo: ");
+            String acao = scanner.nextLine();
 
-        System.out.println("Ingrediente editado com sucesso.");
-    } else {
-        System.out.println("Ingrediente não encontrado.");
+            if (acao.equalsIgnoreCase("editar")) {
+                System.out.println("Digite os novos valores (deixe em branco para manter os valores atuais):");
+                System.out.print("Novo nome: ");
+                String novoNome = scanner.nextLine();
+                System.out.print("Novo preço: ");
+                String novoPrecoStr = scanner.nextLine();
+                double novoPreco = novoPrecoStr.isEmpty() ? ingrediente.preco : Double.parseDouble(novoPrecoStr);
+                System.out.print("Nova quantidade (em gramas ou ml): ");
+                String novaQuantidadeStr = scanner.nextLine();
+                double novaQuantidade = novaQuantidadeStr.isEmpty() ? ingrediente.quantidade : Double.parseDouble(novaQuantidadeStr);
+
+                // Chame o método para editar o ingrediente
+                ingrediente.editarIngrediente(novoNome, novoPreco, novaQuantidade);
+
+                System.out.println("Ingrediente editado com sucesso.");
+            } else if (acao.equalsIgnoreCase("deletar")) {
+                // Remove o ingrediente da lista de ingredientes cadastrados
+                ingredientesCadastrados.remove(nomeIngrediente);
+                System.out.println("Ingrediente excluído com sucesso.");
+            } else {
+                System.out.println("Ação inválida.");
+            }
+        } else {
+            System.out.println("Ingrediente não encontrado.");
+        }
     }
-}
     public static void salvarReceitasCSV(ArrayList<Receita> receitas, DecimalFormat df) {
         try {
             FileWriter writer = new FileWriter("receitas.csv");
