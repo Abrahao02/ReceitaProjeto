@@ -267,7 +267,7 @@ public class Main {
 
                         if (escolhaIngrediente >= 1 && escolhaIngrediente <= receita.ingredientes.size()) {
                             int indiceIngrediente = escolhaIngrediente - 1;
-                            Ingrediente ingrediente = receita.ingredientes.get(indiceIngrediente);
+    
 
                             System.out.print("Digite o novo nome do ingrediente: ");
                             String novoNome = scanner.nextLine();
@@ -388,9 +388,13 @@ public class Main {
                         System.out.println("Quantidade: " + df.format(ingrediente.quantidade) + " gramas ou ml");
                         System.out.println();
                     }
+                    System.out.print("Pressione Enter para continuar...");
+                    scanner.nextLine(); // Aguarde a entrada do usuário para continuar
                 } else if (escolhaMenu == 8) {
                     // Editar Ingrediente (nova opção)
                     editarOuDeletarIngrediente(ingredientesCadastrados, df, scanner);
+                    System.out.print("Pressione Enter para continuar...");
+                    scanner.nextLine(); // Aguarde a entrada do usuário para continuar
                 } else if (escolhaMenu == 9) {
                     System.out.println("Saindo do menu principal.");
                     nomeDoUsuarioAutenticado = null;
@@ -399,8 +403,6 @@ public class Main {
                 }
             }
         }
-
-        scanner.close();
     }
 
     public static void editarOuDeletarIngrediente(Map<String, Ingrediente> ingredientesCadastrados, DecimalFormat df, Scanner scanner) {
