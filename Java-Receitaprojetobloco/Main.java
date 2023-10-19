@@ -80,6 +80,7 @@ class Receita {
         Ingrediente ingrediente = new Ingrediente(novoNome, novoPreco, novaQuantidade, novaQuantidadeUtilizada);
         ingredientes.set(indice, ingrediente);
     }
+    
 
     public double calcularCustoTotal() {
         double custoTotal = 0;
@@ -88,6 +89,7 @@ class Receita {
         }
         return custoTotal;
     }
+    
 
     public void mostrarIngredientes() {
         System.out.println("Ingredientes da receita '" + nome + "':");
@@ -217,18 +219,22 @@ public class Main {
                     System.out.print("Escolha uma receita para ver os ingredientes (ou 'sair' para voltar): ");
                     String escolhaReceita = scanner.nextLine();
                     if (escolhaReceita.equalsIgnoreCase("sair")) {
-                        continue;
+                        continue; // Volte para o menu principal
                     }
-
+                    
                     int receitaEscolhida = Integer.parseInt(escolhaReceita);
                     if (receitaEscolhida >= 1 && receitaEscolhida <= receitas.size()) {
                         Receita receita = receitas.get(receitaEscolhida - 1);
                         receita.mostrarIngredientes();
-
+                        
                         System.out.println("Total gasto na receita '" + receita.nome + "': R$" + df.format(receita.calcularCustoTotal()));
+                        
+                        System.out.print("Pressione Enter para continuar...");
+                        scanner.nextLine(); // Aguarde a entrada do usuário para continuar
                     } else {
                         System.out.println("Escolha inválida.");
                     }
+                    
                 } else if (escolhaMenu == 3) {
                     // Código para editar receita
                     System.out.println("Editar Receita:");
