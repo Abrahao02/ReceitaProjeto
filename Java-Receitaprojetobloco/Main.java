@@ -278,20 +278,46 @@ public class Main {
                             receita.editarIngrediente(indiceIngrediente, novoNome, novoPreco, novaQuantidade, novaQuantidadeUtilizada);
                             System.out.println("Ingrediente editado com sucesso!");
                         } else if (escolhaIngrediente == receita.ingredientes.size() + 1) {
-                            System.out.print("Digite o nome do novo ingrediente: ");
-                            String novoNome = scanner.nextLine();
-                            System.out.print("Digite o preço do novo ingrediente: ");
-                            double novoPreco = scanner.nextDouble();
-                            scanner.nextLine(); // Limpar o buffer
-                            System.out.print("Digite a quantidade do novo ingrediente (em gramas ou ml): ");
-                            double novaQuantidade = scanner.nextDouble();
-                            scanner.nextLine(); // Limpar o buffer
-                            System.out.print("Digite a quantidade utilizada do novo ingrediente (em gramas ou ml): ");
-                            double novaQuantidadeUtilizada = scanner.nextDouble();
+                            // Código para adicionar receita
+    
+
+                    while (true) {
+                        System.out.print("Digite o nome do ingrediente (ou 'sair' para concluir): ");
+                        String nomeIngrediente = scanner.nextLine();
+                        if (nomeIngrediente.equalsIgnoreCase("sair")) {
+                            break;
+                        }
+
+                        Ingrediente ingredienteExistente = ingredientesCadastrados.get(nomeIngrediente);
+                        if (ingredienteExistente != null) {
+                            System.out.println("Ingrediente encontrado:");
+                            System.out.println("Nome: " + ingredienteExistente.nome);
+                            System.out.println("Preço: " + ingredienteExistente.preco);
+                            System.out.println("Quantidade: " + ingredienteExistente.quantidade);
+                            System.out.print("Digite a quantidade utilizada do ingrediente (em gramas ou ml): ");
+                            double quantidadeUtilizada = scanner.nextDouble();
                             scanner.nextLine(); // Limpar o buffer
 
-                            receita.adicionarIngrediente(novoNome, novoPreco, novaQuantidade, novaQuantidadeUtilizada);
+                            receita.adicionarIngrediente(ingredienteExistente.nome, ingredienteExistente.preco, ingredienteExistente.quantidade, quantidadeUtilizada);
+                            System.out.println("Ingrediente adicionado com sucesso!");
+                        } else {
+                            // Se o ingrediente não estiver cadastrado, solicite o preço e a quantidade
+                            System.out.print("Digite o preço do ingrediente: ");
+                            double precoIngrediente = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
+                            System.out.print("Digite a quantidade do ingrediente (em gramas ou ml): ");
+                            double quantidadeIngrediente = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
+                            System.out.print("Digite a quantidade utilizada do ingrediente (em gramas ou ml): ");
+                            double quantidadeUtilizada = scanner.nextDouble();
+                            scanner.nextLine(); // Limpar o buffer
+
+                            Ingrediente novoIngrediente = new Ingrediente(nomeIngrediente, precoIngrediente, quantidadeIngrediente, quantidadeUtilizada);
+                            ingredientesCadastrados.put(nomeIngrediente, novoIngrediente);
+                            receita.adicionarIngrediente(nomeIngrediente, precoIngrediente, quantidadeIngrediente, quantidadeUtilizada);
                             System.out.println("Novo ingrediente adicionado com sucesso!");
+                        }
+                    }
                         } else {
                             System.out.println("Escolha de ingrediente inválida.");
                         }
